@@ -1,0 +1,302 @@
+#+LATEX_CLASS: report_wg
+#+LATEX_CLASS_OPTIONS: [10pt, a4paper, twoside, headinclude,footinclude, BCOR5mm]
+#+LATEX_HEADER: \usepackage[nochapters, beramono, eulermath, pdfspacing, dottedtoc]{classicthesis}
+#+LATEX_HEADER: \usepackage{arsclassica}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{amsmath,amssymb,amsthm}
+#+LATEX_HEADER: \usepackage{enumitem}
+#+OPTIONS: toc:nil date:nil
+#+TITLE: Induction Heating
+#+SUBTITLE: Influence of Current, Frequency, and Workpiece Conductivity
+#+AUTHOR:  Wouter Grouve
+#+KEYWORDS: Induction, Comsol, Sensitivity Study
+#+LATEX_HEADER: \publishers{\normalsize{University of Twente, Faculty of Engineering Technology \\ Mechanics of Solids, Surfaces and Systems, Chair of Production Technology}}
+
+
+* Introduction
+
+The present work deals with induction heating. More specifically, it discusses how power dissipation depends on  driving current and workpiece electrical conductivity. First, we will sketch the overall problem that is being addressed. Consider a thin flat plate with in-plane dimensions significantly larger than its thickness. The plate is locally subjected to a uniform but changing magnetic field as is illustrated in Figure [[fig:overview]]. As the plate's edges are far from the changing field, we can ignore any edge effects. Eddy currents will develop around the changing magnetic field, as a result of which power is dissipated in the plate. Here, we will assume the plate is a non-magnetic conductor, which means that we can ignore dielectric and hysteresis losses and focus solely on Joule heating. We aim to answer the question how the dissipated power is affected by the coil's excitation frequency and current, and by the electrical conductivity of the plate. The first part of this work approaches this issue from a fundamental viewpoint, making use of Ampère's law and Faraday's law. In the the second part of this work, the fundamental analysis is supported by means of numerical simulations of a slightly more realistic case. Two regimes will be considered, namely:
+1. the regime where the plate thickness is extremely small compared to the penetration depth, and
+2. the regime where the plate thickness is extremely large compared to the penetration depth.
+
+\noindent  We will observe that the two regimes give rise to different behavior, which can be understood from the underlying physics.
+
+#+ATTR_LATEX: :scale 1.0
+#+CAPTION: Thin plate of a non-magnetic conducting material, subjected to a time-varying magnetic field.
+#+NAME:   fig:overview
+[[file:img/overview.png]]
+
+* Analytical derivation
+
+** Theoretical background
+
+We will begin our discussion on induction heating at the most natural starting point, namely at the coil. The currents running through the coil give rise to a magnetic field, which can be described using Ampère's law. With reference to the left illustration in Figure [[fig:laws]],  Ampère's law relates the magnetic field $\mathbf{B}(\mathbf{x})$, integrated around a closed loop, to the electric current passing through that loop, or:
+#+BEGIN_SRC latex
+  \begin{equation}
+      \label{eq:emf}
+      \oint_C \mathbf{B}\cdot\text{d}\mathbf{l} = \mu_0 I,
+  \end{equation}
+#+END_SRC
+\noindent with $I$ the enclosed current and $\mu_0$ the magnetic permeability of vacuum. For our discussion, it is important to note that the magnetic field is proportional to the current in the coil. Now, in the case of induction heating, we supply a time-varying current to the coil, as a result of which a time-varying magnetic field is generated. It is this time-varying magnetic field that is responsible for the eddy currents in our workpiece. According to Faraday's law, and now with reference to the right illustration in Figure [[fig:laws]], the induced electromotive force $\varepsilon$ around a closed path is equal to the rate of change of the magnetic flux $\Theta_B$ enclosed by the path, or mathematically:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:faraday_law}
+    \varepsilon = - \frac{\text{d}\Theta_B}{\text{d}t},
+  \end{equation}
+#+END_SRC
+\noindent with the flux defined as the surface integral of the magnetic field:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:faraday_law_S}
+    \Theta_B(t) = \iint_S \mathbf{B}(t) \cdot \text{d}\mathbf{A}.
+  \end{equation}
+#+END_SRC
+\noindent The induced electromotive force $\varepsilon$, in turn, is defined as the integral of the electric field $\mathbf{E}$ around the closed path:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:emf}
+    \varepsilon = \oint_C \mathbf{E}\cdot \text{d}\mathbf{l}.
+  \end{equation}
+#+END_SRC
+\noindent Combining the previous equations, we can show that the induced electric field is proportional to the time derivative of the magnetic field, or:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:faraday_law_E}
+    \oint_C \mathbf{E}\cdot \text{d}\matbhf{l}
+                                      = - \frac{\text{d}\Theta_B}{\text{d}t}
+                                      = - \frac{\text{d}}{\text{d}t}
+            \iint_S \mathbf{B}(t) \cdot \text{d}\mathbf{A}.
+  \end{equation}
+#+END_SRC
+
+#+ATTR_LATEX: :scale 1.0 :placement [!b]
+#+CAPTION: Schematic illustration of Ampère's law (left) and Faraday's law (right).
+#+NAME:   fig:laws
+[[file:img/laws.png]]
+
+ The induced eddy currents will lead to heating. As mentioned in the introduction, we are considering an isotropic non-magnetic conductor, which means that power dissipation or heating is governed by Joule effects only, while magnetic and dielectric losses can be neglected. Further, we will assume that the excitation current supplied to the coil can be described using a sine wave. For this case, the average power density $\overline{p}$ at a location $\mathbf{x}$ in the plate is defined as:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:power_density}
+    \overline{p}(\mathbf{x}) = \frac{1}{2}\mathbf{E}_0\cdot\mathbf{J}_0,
+  \end{equation}
+#+END_SRC
+\noindent with $\mathbf{E_0}$ and $\mathbf{J_0}$ the amplitude of the electric field and current density, respectively. Formulated in terms of the electric field or the current density only, which will be useful later, this yields:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:joule_E}
+    \overline{p}(\mathbf{x}) = \frac{\sigma}{2} \lVert \mathbf{E}_0\rVert^2
+    \text{, and}
+  \end{equation}
+#+END_SRC
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:joule_J}
+    \overline{p}(\mathbf{x}) = \frac{1}{2\sigma} \lVert
+                               \mathbf{J}_0\rVert^2,
+  \end{equation}
+#+END_SRC
+\noindent respectively, with $\sigma$ the electrical conductivity. The first equation shows that the induced power is proportional to the electrical conductivity times the amplitude of the electrical field squared, while the second illustrates that the induced power is proportional to the current density squared divided by the conductivity.
+
+The last concept that need introduction is the skin effect and the associated penetration depth. The skin effect describes the tendency of an alternating current to flow through the outer edges of the conductor's cross-section rather than through its center. Thus, the current density is found to be the highest at the surface of the conductor, and then decays towards it center. The penetration or skin depth \(\delta\) is a measure for the strength of the decay and indicates the distance where the current density has fallen to 1/$e$ of the surface density. We can determine the skin depth, in the case of a non-magnetic conductor, as:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:delta}
+      \delta = \sqrt{\frac{1}{\pi f \sigma \mu_0}},
+  \end{equation}
+#+END_SRC
+\noindent with \(f\) the frequency in Hz. In the following two sections, we will consider two regimes. In the first regime, the plate is thin compared to the penetration depth. Here, the current distribution can be considered uniform over the plate thickness. In addition, the eddy currents are sufficiently small for the magnetic field caused by the eddy currents to be negligible compared to the field created by the coil. In the second regime, the plate is thick compared to the penetration depth. The eddy currents are now confined to the region close to the surface of the plate. Moreover, the eddy currents are now so large that the induced magnetic field cancels the field generated by the coil.
+
+** Thin plates
+
+The first regime considered is that of a plate which can be considered thin compared to the penetration depth. As mentioned earlier, we assume that the excitation current can be described using a sine wave:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:sine}
+    I(t) = I_0\sin(2\pi f t),
+  \end{equation}
+#+END_SRC
+\noindent with $f$ the frequency and $I_0$ the amplitude. The coil now generates a sinusoidal magnetic field $\mathbf{B}(\mathbf{x}, t)$ with the same frequency, and an amplitude that is proportional to the coil current according to Ampère law. The time derivative of the magnetic field, and thus the magnetic flux impinging on the plate, is then proportional to the frequency and the amplitude, or:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \frac{\text{d}\Theta_B}{\text{d}t} \propto fI_0.
+    % \quad\text{and}\quad
+    % \frac{\text{d}\Theta_B}{\text{d}t} \propto
+  \end{equation}
+#+END_SRC
+\noindent Assuming the eddy current paths do not depend on coil frequency or current but only on coil geometry, Faraday's law, provided in Equation \ref{eq:faraday_law_E}, explains that the electric field in the plate has to be proportional to the frequency and current as well:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    \mathbf{E}_0 \propto fI_0.
+    % \quad\text{and}\quad
+    % \mathbf{E}_0 \propto
+  \end{equation*}
+#+END_SRC
+Now we can turn our attention to the power density $\overline{p}(\mathbf{x})$. Equation \ref{eq:power_density} shows that power density is proportional to the electrical conductivity and to the square of the amplitude of the induced electric field:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    \overline{p} \propto \sigma\mathbf{E}_0^2,
+    % \quad\text{and}\quad
+    % \overline{p} \propto
+  \end{equation*}
+#+END_SRC
+\noindent or, after combining with the previous findings:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    \overline{p} \propto \sigma f^2 I_0^2
+    % \quad\text{and}\quad
+    % \overline{p} \propto f^2 \quad\text{and}\quad
+    % \overline{p} \propto I_0^2.
+  \end{equation*}
+#+END_SRC
+\noindent The power dissipated in the plate is simply the volume integral of the power density over the full plate:
+#+BEGIN_SRC latex
+  \begin{equation}
+    P = \iiint_V \overline{p}\text{d}V,
+  \end{equation}
+#+END_SRC
+\noindent which means that we find that the total power dissipated depends on the excitation current, the frequency, and the plate's electrical conductivity as:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:thin_plates}
+    P \propto I_0^2 \quad\text{and}\quad
+    P \propto f^2 \quad\text{and}\quad
+    P \propto \sigma.
+  \end{equation}
+#+END_SRC
+
+** Thick plates
+
+Next, we consider the case where the plate thickness is large compared to the penetration depth. A case which, at least for your author, requires some mental agility. The eddy currents in this regime are confined to the plate's outer surface and, in addition, they generate a magnetic field strong enough to counteract the field generated by the coil. As a first and important step, we establish that the current in the plate should be proportional to the current in the coil but does not depend on the excitation frequency anymore. This seems counterintuitive given Faraday's law but is a direct consequence of the fact that the field generated by the eddy currents reduce the impinging flux. Perhaps a simplifying example is useful here. Let us consider two circular coils with the same radius positioned on top of each other. The upper coil is excited with a current $I_0$ and a frequency $f$. In order for the magnetic field to disappear away from the coils, as we see in the bulk of a thick plate, the lower coil needs to generate a magnetic field that opposes the field generated by the upper coil. This is only possible when lower coil is excited with same frequency $f$ and with the same amplitude having with a different sign, or $-I_0$.
+
+Now, in order to progress, we will consider the eddy currents to be confined to the skin thickness $\delta$. In addition, for the sake of argument, we will assume that the currents are uniform over the thickness. The current density is then proportional to the excitation current in the coil $I_0$ divided by the skin thickness, or:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    \mathbf{J}_0 \propto \frac{I_0}{\delta}.
+  \end{equation*}
+#+END_SRC
+\noindent From its definition provided in Equation \ref{eq:delta}, we can see that the skin thickness is inversely proportional to the square root of the frequency $f$ and the electrical conductivity of the plate. Combined with the relation above, this yields:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    \mathbf{J}_0 \propto I_0 f^{1/2} \sigma^{1/2}.
+    % \quad\text{and}\quad
+    % \mathbf{J}_0 \propto f^{1/2} \quad\text{and}\quad
+    % \mathbf{J}_0 \propto \sigma^{1/2}.
+  \end{equation*}
+#+END_SRC
+\noindent Making use of equation \ref{eq:joule_J}, we can establish how the power density changes with excitation current, frequency, and conductivity:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    \overline{p} \propto I_0^2 f^1 \sigma^0
+    % \quad\text{and}\quad
+    % \overline{p} \propto f^1 \quad\text{and}\quad
+    % \overline{p} \propto \sigma^0
+  \end{equation*}
+#+END_SRC
+\noindent The total power dissipated can be determined by integrating the power density over the volume. Here, we have to realize that the eddy currents are confined in a region near the surface with a thickness equal to the penetration depth $\delta$. In other words the total power dissipated $P$ is proportional to the power density times the penetration depth. As a result, we find that the dissipated power scales with current, frequency and conductivity as:
+#+BEGIN_SRC latex
+  \begin{equation}
+    \label{eq:thick_plates}
+    P \propto I_0^2 \quad\text{and}\quad
+    P \propto f^{1/2} \quad\text{and}\quad
+    P \propto \sigma^{-1/2}.
+  \end{equation}
+#+END_SRC
+
+* Numerical simulations
+
+** Model outline and sensitivity analysis
+
+A two-dimensional axisymmetric finite element analysis was performed using Comsol. Figure [[fig:mesh]] shows the model geometry and mesh used for the simulations. The model comprises of a flat circular plate, indicated in green, surrounded by air. The plate can be considered a non-magnetic conductor with an isotropic electric conductivity $\sigma$. A magnetic conductor boundary condition was used at the lower edge of the model. This imposes the currents to flow tangentially (both in-plane as out-of-plane) to this boundary, while the magnetic field can only point in the normal direction and cannot change sign when crossing the boundary. In effect, this means that the geometry is mirrored along this edge with the current in the coil (indicated in red) above and below the plate having the same sign. Infinite elements were used at the outer edge of the domain to represent an infinite domain, while a boundary layer elements were used on the edges of the plate to accurately capture the skin effect.
+
+#+ATTR_LATEX: :scale 1.0
+#+CAPTION: Model overview with mesh used for the numerical simulations.
+#+NAME:   fig:mesh
+[[file:img/mesh.png]]
+
+#+LATEX: \newpage
+Table [[tbl:model]] lists the geometric parameters and material properties used in the model. The Maxwell equations were solved in the frequency domain, after which the power dissipated in the plate was determined as:
+\[
+P = \int_V \frac{1}{2} \lVert \mathbf{J}_0\rVert^2/\sigma dV,
+\]
+with $\mathbf{J}_0$ the amplitude of the current density, and $\sigma$ the conductivity. A sensitivity analysis was performed to study the influence of excitation current $I_0$, excitation frequency $f$, and plate conductivity $\sigma$. The analysis involved the systematic variation of one variable around a chosen baseline, while keeping all other variables constant. The baseline values, listed in Table [[tbl:baseline]], correspond to a skin thickness $\delta$ of 5 mm, similar to the plate thickness $t$. The excitation frequency $f$ and the plate's electrical conductivity $\sigma$ were varied such that ratio of skin thickness over plate thickness $\delta/t$ covers three orders of magnitude, and ranges from 0.03 to 30. The calculated power was normalized by dividing it by the power dissipated for the baseline case.
+
+#+CAPTION: Geometric parameters and material properties used in the simulations.
+#+NAME:   tbl:model
+| Property                                 | Value   |
+|------------------------------------------+---------|
+| Coil radius                              | 20 mm   |
+| Coil wire radius                         | 2.5 mm  |
+| Air sphere radius                        | 60 mm   |
+| Workpiece thickness                      | 5 mm    |
+| Workpiece radius                         | 40 mm   |
+| Coil-to-workpiece distance               | 10 mm   |
+| Coil conductivity                        | 60 MS/m |
+| Coil relative magnetic permeability      | 1.0     |
+| Coil dielectric constant                 | 1.0     |
+| Workpiece relative magnetic permeability | 1.0     |
+| Workpiece dielectric constant            | 1.0     |
+
+#+CAPTION: Baseline, minimum, and maximum values used in the sensitivity analysis. The skin depth $\delta$ for the baseline values equals to 5 mm, which is similar to the plate thickness.
+#+NAME:   tbl:baseline
+| Property               | Min.   | Baseline | Max.   |
+|------------------------+--------+----------+--------|
+| Coil current           | 0.1 A  | 1.0 A    | 1000 A |
+| Coil frequency         | 10 Hz  | 10 kHz   | 10 MHz |
+| Workpiece conductivity | 1 kS/m | 1 MS/m   | 1 GS/m |
+
+** Results
+
+Before showing the results of the sensitivity study, we first will briefly compare the two regimes defined earlier. Figure [[fig:simulation]] illustrates the magnetic field direction and eddy current amplitude for the case of a thin (left) and a thick (right) plate. It is good to stress here that the colors in the illustrations have not been scaled and cannot be used for comparison of absolute values. The figures clearly illustrate the differences between the two regimes. When the plate is thin compared to the penetration depth, as is illustrated on the left, the magnetic field passes through the plate and eddy currents develop over the full thickness of the plate. Contrasting, the right figures show the case when the plate is considered thick with respect to penetration depth. Here, the eddy currents are confined to the surface of the plate. In addition, these eddy currents shield the coil magnetic field which cannot penetrate the plate anymore.
+
+#+ATTR_LATEX: :scale 1.0 :placement [!t]
+#+CAPTION: Magnetic field direction (top) and eddy current amplitude (bottom) for a thin and a thick plate.
+#+NAME:   fig:simulation
+#+ATTR_ORG: :width 500
+[[file:img/simulations.png]]
+
+The results of the sensitivity study for the current, the frequency, and the plate conductivity are provided in Figures [[fig:current]], [[fig:freq]], and [[fig:cond]], respectively. The first figure shows the normalized induced power as a function of the coil current. As anticipated from the earlier analysis, the induced power is proportional to the square of the coil current in both regimes. The second figure plots the normalized power as a function of excitation frequency. For clarity, the secondary x-axis plots the penetration depth divided by the plate thickness. Please note that the penetration depth is inversely proportional to the square root of the frequency and that, as result, this axis is reversed. Here, two regimes can be identified. On the left side of the figure, corresponding to the case where the plate is thin compared to the penetration depth, the induced power is proportional to the frequency squared. On the right side of the figure, corresponding to a thick plate in comparison with the penetration depth, the induced power is proportional to the square root of the frequency. The last figure shows the normalized induced power as a function of the plate conductivity. Again, the secondary axis shows the ratio between penetration depth and plate thickness. The figure shows that the induced power is proportional to the the conductivity when the penetration depth is large, while it is inversely proportional to the square root of frequency for small penetration depths. It is good to note here that the results of the sensitivity analysis correspond well with the dependencies obtained from theoretical analysis as provided in equation \ref{eq:thin_plates} and \ref{eq:thick_plates}.
+
+#+BEGIN_MINIPAGE
+#+CAPTION: Normalized induced power as a function of coil current $I_0$.
+#+NAME:   fig:current
+#+ATTR_ORG: :width 500
+#+ATTR_LATEX: :width 10cm
+[[file:img/current.png]]
+
+#+CAPTION: Normalized induced power as function of frequency $f$.
+#+NAME:   fig:freq
+#+ATTR_ORG: :width 500
+#+ATTR_LATEX: :width 10cm
+[[file:img/frequency.png]]
+
+#+CAPTION: Normalized induced power as a function of plate conductivity $\sigma$.
+#+NAME:   fig:cond
+#+ATTR_ORG: :width 500
+#+ATTR_LATEX: :width 10cm
+[[file:img/conductivity.png]]
+#+END_MINIPAGE
+
+
+* Summary
+
+The present work dealt with the induction heating of non-magnetic conductors. More specifically, we discussed how the power dissipated in the workpiece $P$ depends on the driving current $I_0$, the excitation frequency $f$, and the workpiece conductivity $\sigma$. Two approaches were followed. First, the dependencies were derived analytically based on the underlying physics and a number of simplifying assumptions. Second, the dependencies were determined numerically using Comsol for a more realist case. Both approaches arrived at the same result. In case the plate is thin compared to the penetration depth, the following dependencies hold:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    P \propto I_0^2 \quad\text{and}\quad
+    P \propto f^2 \quad\text{and}\quad
+    P \propto \sigma \quad\text{when: } t \ll \delta.
+  \end{equation*}
+#+END_SRC
+
+\noindent Alternatively, in case the plate is thick compared to the penetration depth, these decencies change to:
+#+BEGIN_SRC latex
+  \begin{equation*}
+    P \propto I_0^2 \quad\text{and}\quad
+    P \propto f^{1/2} \quad\text{and}\quad
+    P \propto \sigma^{-1/2} \quad\text{when: }\delta \ll t.
+  \end{equation*}
+#+END_SRC
+
+\noindent The dependencies in the transition region cannot be readily described analytically and most probably depend (strongly) on coil geometry, making it difficult to generalize.
