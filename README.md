@@ -37,13 +37,13 @@ src="https://latex.codecogs.com/svg.latex?f"/>, and conductivity <img
 src="https://latex.codecogs.com/svg.latex?\sigma"/> as:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?P\propto I^2 f^2 \sigma,"/>
+<img src="https://latex.codecogs.com/svg.latex?P\propto{}I^2f^2\sigma,"/>
 </p>
 
 while for the second regime these dependencies change to:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?P\propto I^2 f^{1/2} \sigma^{1/2}."/>
+<img src="https://latex.codecogs.com/svg.latex?P\propto{}I^2{}f^{1/2}\sigma^{1/2}."/>
 </p>
 
 The dependencies found for both regimes can be understood from the
